@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KMC Executive Brand Persona Book</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ── RESET & TOKENS ─────────────────────────────────── */
+:root{
+  --ink:#0f0f0f; --paper:#f5f2ec; --gold:#b8955a; --gold-light:#d4b483;
+  --slate:#1e2533; --slate-mid:#2d3748; --muted:#7a7a7a; --rule:#e0d9ce;
+  --accent-1:#c2603d; --accent-2:#4a7c7e; --accent-3:#7b5ea7;
+  --accent-4:#c45c7a; --accent-5:#3d6b9e; --accent-6:#6b8e3d;
+  --accent-7:#b8760a; --accent-8:#7e4a3d; --accent-9:#3d7e6b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:"DM Sans",sans-serif;background:var(--paper);color:var(--ink);overflow-x:hidden;}
+
+/* ── AUTH SCREEN ────────────────────────────────────── */
+#authScreen{
+  min-height:100vh;background:var(--slate);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden;
+}
+#authScreen::before{
+  content:"";position:absolute;inset:0;
+  background:radial-gradient(80% 60% at 50% 40%,rgba(184,149,90,.12) 0%,transparent 70%);
+}
+#authScreen .grid{
+  position:absolute;inset:0;opacity:.04;
+  background-image:linear-gradient(var(--gold) 1px,transparent 1px),
+    linear-gradient(90deg,var(--gold) 1px,transparent 1px);
+  background-size:60px 60px;
+}
+.auth-box{position:relative;z-index:1;text-align:center;max-width:440px;}
+.auth-ornament{width:80px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:0 auto 32px;}
+.auth-label{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:4px;color:var(--gold-light);text-transform:uppercase;margin-bottom:20px;}
+.auth-title{font-family:"Cormorant Garamond",serif;font-size:clamp(32px,5vw,52px);font-weight:300;color:#fff;line-height:1.1;margin-bottom:8px;}
+.auth-title em{font-style:italic;color:var(--gold-light);}
+.auth-sub{font-size:13px;color:rgba(255,255,255,.4);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:48px;}
+.auth-btn{
+  display:inline-flex;align-items:center;gap:12px;
+  background:var(--gold);color:var(--slate);
+  font-family:"DM Mono",monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;
+  padding:16px 32px;border:none;cursor:pointer;transition:background .2s;
+}
+.auth-btn:hover{background:var(--gold-light);}
+.auth-btn svg{width:18px;height:18px;flex-shrink:0;}
+.auth-note{margin-top:20px;font-size:11px;color:rgba(255,255,255,.25);font-family:"DM Mono",monospace;letter-spacing:1px;}
+.auth-error{margin-top:16px;font-size:12px;color:#f87171;font-family:"DM Mono",monospace;}
+
+/* ── LOADING ────────────────────────────────────────── */
+#loadingScreen{
+  min-height:100vh;background:var(--paper);display:none;
+  flex-direction:column;align-items:center;justify-content:center;gap:20px;
+}
+.spinner{width:36px;height:36px;border:3px solid var(--rule);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+
+/* ── MAIN APP ───────────────────────────────────────── */
+#app{display:none;}
+
+/* COVER */
+.cover{
+  min-height:100vh;background:var(--slate);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;position:relative;overflow:hidden;padding:60px 40px;
+}
+.cover::before{content:"";position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 40%,rgba(184,149,90,.12) 0%,transparent 70%);}
+.cover-grid{position:absolute;inset:0;opacity:.04;background-image:linear-gradient(var(--gold) 1px,transparent 1px),linear-gradient(90deg,var(--gold) 1px,transparent 1px);background-size:60px 60px;}
+.cover-ornament{width:120px;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin-bottom:40px;animation:fadeIn 1.2s ease;}
+.cover-label{font-family:"DM Mono",monospace;font-size:11px;letter-spacing:4px;color:var(--gold-light);text-transform:uppercase;margin-bottom:24px;animation:fadeIn 1s ease .2s both;}
+.cover-title{font-family:"Cormorant Garamond",serif;font-size:clamp(52px,8vw,88px);font-weight:300;line-height:1.05;color:#fff;text-align:center;margin-bottom:12px;animation:fadeIn 1s ease .4s both;}
+.cover-title em{font-style:italic;color:var(--gold-light);font-weight:300;}
+.cover-subtitle{font-size:15px;font-weight:300;color:rgba(255,255,255,.5);letter-spacing:2px;text-transform:uppercase;margin-bottom:60px;animation:fadeIn 1s ease .6s both;}
+.cover-divider{width:1px;height:60px;background:linear-gradient(to bottom,var(--gold),transparent);margin-bottom:40px;animation:fadeIn 1s ease .8s both;}
+.cover-names{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;max-width:700px;animation:fadeIn 1s ease 1s both;}
+.cover-name-chip{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.1);}
+.cover-cta{position:absolute;bottom:40px;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:3px;color:var(--gold);text-transform:uppercase;animation:pulse 2s ease-in-out infinite;cursor:pointer;}
+.cover-user{position:absolute;top:24px;right:32px;display:flex;align-items:center;gap:10px;z-index:10;}
+.cover-user-name{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1.5px;color:rgba(255,255,255,.35);text-transform:uppercase;}
+.signout-btn{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:rgba(255,255,255,.25);background:none;border:1px solid rgba(255,255,255,.1);padding:4px 10px;cursor:pointer;transition:color .2s;}
+.signout-btn:hover{color:var(--gold-light);}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+@keyframes fadeIn{0%{opacity:0;transform:translateY(12px)}100%{opacity:1;transform:translateY(0)}}
+
+/* NAV */
+.nav{position:sticky;top:0;z-index:100;background:var(--slate);border-bottom:1px solid rgba(184,149,90,.2);padding:0 40px;display:none;align-items:center;overflow-x:auto;scrollbar-width:none;}
+.nav::-webkit-scrollbar{display:none;}
+.nav-logo{font-family:"Cormorant Garamond",serif;font-size:18px;font-weight:600;color:var(--gold);white-space:nowrap;padding:16px 20px 16px 0;border-right:1px solid rgba(255,255,255,.1);margin-right:16px;flex-shrink:0;}
+.nav-btn{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.45);padding:20px 14px;cursor:pointer;border:none;background:none;white-space:nowrap;transition:color .2s;flex-shrink:0;}
+.nav-btn:hover,.nav-btn.active{color:var(--gold-light);}
+.nav-btn.active{border-bottom:2px solid var(--gold);}
+
+/* SECTIONS */
+.section{display:none;}
+.section.active{display:block;}
+
+/* INTRO */
+.intro-page{max-width:900px;margin:0 auto;padding:80px 40px;}
+.section-eyebrow{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:4px;text-transform:uppercase;color:var(--gold);margin-bottom:16px;}
+.intro-page h1{font-family:"Cormorant Garamond",serif;font-size:clamp(36px,5vw,56px);font-weight:300;line-height:1.15;margin-bottom:32px;color:var(--slate);}
+.intro-page h1 em{font-style:italic;color:var(--gold);}
+.intro-body{font-size:16px;line-height:1.8;color:#444;max-width:680px;font-weight:300;margin-bottom:40px;}
+.intro-rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px;margin-top:48px;}
+.intro-rule{border-left:3px solid var(--gold);padding:20px 24px;background:#fff;}
+.intro-rule h3{font-family:"Cormorant Garamond",serif;font-size:20px;font-weight:600;margin-bottom:8px;color:var(--slate);}
+.intro-rule p{font-size:13px;line-height:1.7;color:var(--muted);font-weight:300;}
+.how-to-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:2px;margin-top:48px;border:2px solid var(--rule);}
+.how-cell{padding:28px 24px;background:#fff;}
+.how-cell .num{font-family:"Cormorant Garamond",serif;font-size:48px;font-weight:300;color:var(--rule);line-height:1;margin-bottom:12px;}
+.how-cell h4{font-size:13px;font-weight:600;margin-bottom:8px;text-transform:uppercase;letter-spacing:1px;color:var(--slate);}
+.how-cell p{font-size:12px;line-height:1.7;color:var(--muted);}
+
+/* PERSONA */
+.persona-divider{height:4px;width:100%;}
+.persona-hero{padding:64px 40px 40px;position:relative;overflow:hidden;background:#fff;}
+.persona-hero::after{content:"";position:absolute;bottom:0;left:40px;right:40px;height:1px;background:var(--rule);}
+.persona-top{display:grid;grid-template-columns:1fr auto;align-items:start;max-width:1200px;margin:0 auto;gap:40px;}
+.persona-badge{display:inline-flex;align-items:center;gap:8px;margin-bottom:20px;}
+.persona-badge-dot{width:8px;height:8px;border-radius:50%;}
+.persona-badge-text{font-family:"DM Mono",monospace;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);}
+.persona-name{font-family:"Cormorant Garamond",serif;font-size:clamp(40px,6vw,72px);font-weight:300;line-height:1.05;color:var(--slate);margin-bottom:8px;}
+.persona-role{font-size:14px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);font-weight:400;margin-bottom:24px;}
+.persona-tagline{font-family:"Cormorant Garamond",serif;font-size:22px;font-style:italic;font-weight:300;line-height:1.5;color:var(--slate);max-width:600px;border-left:3px solid;padding-left:20px;margin-top:24px;}
+.persona-word-badge{padding:16px 24px;border:1px solid var(--rule);text-align:center;min-width:140px;flex-shrink:0;}
+.persona-word-badge .label{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.persona-word-badge .word{font-family:"Cormorant Garamond",serif;font-size:32px;font-weight:600;line-height:1;}
+.persona-body{max-width:1200px;margin:0 auto;padding:48px 40px;display:grid;grid-template-columns:2fr 1fr;gap:48px;}
+@media(max-width:768px){.persona-body,.persona-top{grid-template-columns:1fr;}}
+
+/* CARDS */
+.card{background:#fff;border:1px solid var(--rule);padding:28px;margin-bottom:24px;}
+.card-title{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--rule);}
+.card p{font-size:14px;line-height:1.75;color:#444;font-weight:300;}
+.card p+p{margin-top:10px;}
+.tot-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
+.tot-item{padding:10px 14px;font-size:12px;font-weight:500;border:1.5px solid var(--rule);color:var(--muted);text-align:center;border-radius:2px;}
+.tot-item.selected{border-color:currentColor;background:rgba(0,0,0,.03);font-weight:600;}
+.tag-cloud{display:flex;flex-wrap:wrap;gap:8px;}
+.tag{font-size:12px;font-weight:500;padding:5px 12px;border:1px solid;border-radius:2px;white-space:nowrap;}
+.tag.red{color:rgb(160,57,43);border-color:rgb(245,198,192);background:rgb(253,243,242);}
+.tag.blue{color:rgb(45,95,160);border-color:rgb(192,212,240);background:rgb(240,245,253);}
+.quote-block{background:var(--slate);padding:32px;margin-bottom:24px;position:relative;}
+.quote-block::before{content:"\201C";font-family:"Cormorant Garamond",serif;font-size:100px;line-height:.6;color:var(--gold);opacity:.4;position:absolute;top:20px;left:20px;}
+.quote-block blockquote{font-family:"Cormorant Garamond",serif;font-size:20px;font-style:italic;font-weight:300;line-height:1.55;color:#fff;padding-left:40px;position:relative;z-index:1;}
+.quote-block cite{display:block;margin-top:12px;font-family:"DM Mono",monospace;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--gold-light);padding-left:40px;font-style:normal;}
+.sidebar .card{background:var(--paper);}
+.kv-list{list-style:none;}
+.kv-list li{padding:10px 0;border-bottom:1px solid var(--rule);display:flex;gap:12px;font-size:13px;}
+.kv-list li:last-child{border-bottom:none;}
+.kv-list .k{font-family:"DM Mono",monospace;font-size:9px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);min-width:90px;padding-top:1px;}
+.kv-list .v{font-weight:500;color:var(--slate);line-height:1.5;}
+.pillar-list{list-style:none;}
+.pillar-list li{padding:12px 0;border-bottom:1px solid var(--rule);display:flex;align-items:flex-start;gap:12px;font-size:13px;line-height:1.5;}
+.pillar-list li:last-child{border-bottom:none;}
+.pillar-num{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:300;color:var(--rule);line-height:1;flex-shrink:0;min-width:24px;}
+
+footer{background:var(--slate);padding:40px;text-align:center;font-family:"DM Mono",monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.25);}
+footer span{color:var(--gold);margin:0 8px;}
+
+/* EMPTY STATE */
+.empty-state{padding:120px 40px;text-align:center;}
+.empty-state h2{font-family:"Cormorant Garamond",serif;font-size:32px;font-weight:300;color:var(--slate);margin-bottom:12px;}
+.empty-state p{font-size:14px;color:var(--muted);}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ══════════════════════════════════════ -->
+<div id="authScreen">
+  <div class="grid"></div>
+  <div class="auth-box">
+    <div class="auth-ornament"></div>
+    <div class="auth-label">KMC Solutions · Internal</div>
+    <h1 class="auth-title">Executive<br><em>Brand Persona</em><br>Book</h1>
+    <p class="auth-sub">LinkedIn Voice Guide for IT Leaders</p>
+    <button class="auth-btn" onclick="signIn()">
+      <svg viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="1" y="1" width="9" height="9" fill="#f25022"/>
+        <rect x="11" y="1" width="9" height="9" fill="#7fba00"/>
+        <rect x="1" y="11" width="9" height="9" fill="#00a4ef"/>
+        <rect x="11" y="11" width="9" height="9" fill="#ffb900"/>
+      </svg>
+      Sign in with Microsoft
+    </button>
+    <p class="auth-note">KMC Solutions Microsoft 365 account required</p>
+    <p class="auth-error" id="authError"></p>
+  </div>
+</div>
+
+<!-- ══ LOADING ══════════════════════════════════════════ -->
+<div id="loadingScreen">
+  <div class="spinner"></div>
+  <p class="loading-text" id="loadingText">Signing you in…</p>
+</div>
+
+<!-- ══ MAIN APP ═════════════════════════════════════════ -->
+<div id="app">
+
+  <!-- COVER -->
+  <div class="cover" id="cover">
+    <div class="cover-grid"></div>
+    <div class="cover-user">
+      <span class="cover-user-name" id="userDisplayName"></span>
+      <button class="signout-btn" onclick="signOut()">Sign out</button>
+    </div>
+    <div class="cover-ornament"></div>
+    <div class="cover-label">KMC Solutions · 2026 Edition</div>
+    <h1 class="cover-title">Executive<br><em>Brand Persona</em><br>Book</h1>
+    <p class="cover-subtitle">LinkedIn Voice Guide for IT Leaders</p>
+    <div class="cover-divider"></div>
+    <div class="cover-names" id="coverNames">
+      <!-- Populated dynamically -->
+    </div>
+    <div class="cover-cta" onclick="openBook()">↓ Open Book</div>
+  </div>
+
+  <!-- NAV -->
+  <nav class="nav" id="mainNav">
+    <div class="nav-logo">KMC · Persona</div>
+    <button class="nav-btn" onclick="showSection('intro',this)">Overview</button>
+    <div id="navPersonaBtns"></div>
+  </nav>
+
+  <!-- INTRO -->
+  <div class="section" id="intro">
+    <div class="intro-page">
+      <div class="section-eyebrow">How to Use This Book</div>
+      <h1>Your voice is<br>your <em>brand asset.</em></h1>
+      <p class="intro-body">
+        This persona book is the single source of truth for how each KMC executive shows up on LinkedIn. It translates each leader's authentic identity into a consistent, compelling content framework — built for business owners, decision-makers, and the professionals they want to attract, inspire, and convert.
+      </p>
+      <p class="intro-body">
+        Every page captures one leader's distinct voice, content pillars, tone guidelines, no-go zones, and signature phrases. Ghost writers and content teams should treat each persona as a living brief — not a script, but a compass.
+      </p>
+      <div class="intro-rules">
+        <div class="intro-rule">
+          <h3>Voice, not vocabulary</h3>
+          <p>Don't copy the exact words. Internalize the tone, the worldview, and the things that leader genuinely cares about. Then write from that place.</p>
+        </div>
+        <div class="intro-rule">
+          <h3>One audience, one message</h3>
+          <p>All content is written for business owners — from SMEs to enterprise — who are evaluating partners, seeking insights, or building their own teams. Speak to their growth challenges.</p>
+        </div>
+        <div class="intro-rule">
+          <h3>No two voices alike</h3>
+          <p>Each leader has a distinct brand. Avoid blending voices. Every persona's differentiator is a strategic asset. Protect it.</p>
+        </div>
+      </div>
+      <div class="how-to-grid">
+        <div class="how-cell"><div class="num">01</div><h4>Read the full persona</h4><p>Study their tone, their story, their red lines before writing a single word.</p></div>
+        <div class="how-cell"><div class="num">02</div><h4>Choose a content pillar</h4><p>Every post should anchor to one of their defined topics — never generic filler.</p></div>
+        <div class="how-cell"><div class="num">03</div><h4>Apply their format preference</h4><p>Some prefer storytelling; others favor facts. Match the structure to the persona.</p></div>
+        <div class="how-cell"><div class="num">04</div><h4>Avoid their red lines</h4><p>Every leader has topics and tones that don't fit their brand. These are non-negotiable.</p></div>
+      </div>
+      <div style="margin-top:48px;padding:24px;background:#fff;border:1px solid var(--rule);border-left:3px solid var(--gold);">
+        <div class="card-title">Live Data</div>
+        <p style="font-size:13px;color:var(--muted);">This book updates automatically when new slambook responses are submitted. Last refreshed: <strong id="lastRefreshed" style="color:var(--slate);">—</strong> &nbsp;·&nbsp; <span id="totalPersonas" style="color:var(--slate);font-weight:600;">—</span> personas loaded.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- PERSONA SECTIONS (dynamic) -->
+  <div id="personaSections"></div>
+
+  <footer>
+    <div>KMC Solutions <span>·</span> Executive Brand Persona Book <span>·</span> 2026 <span>·</span> For Internal Use Only</div>
+  </footer>
+</div>
+
+<script>
+// ══ CONFIG ═══════════════════════════════════════════
+const CONFIG = {
+  clientId:  'cb0b9680-4572-48fb-a813-cb4357e2d2f9',
+  tenantId:  'c3435bea-c1d5-42d3-9288-7387a8459771',
+  siteHost:  'kmcsolutions.sharepoint.com',
+  sitePath:  '/teams/ITlords',
+  fileId:    'EB17E177-0C01-4F31-89EF-7AF8FFB2A14C',
+  scopes:    ['Files.Read.All','Sites.Read.All','User.Read']
+};
+
+const ACCENTS = [
+  '--accent-8','--accent-2','--accent-5','--accent-3',
+  '--accent-4','--accent-1','--accent-6','--accent-7','--accent-9'
+];
+
+let msalInstance = null;
+
+// ══ UI HELPERS ═══════════════════════════════════════
+function show(id)      { document.getElementById(id).style.display = 'flex'; }
+function hide(id)      { document.getElementById(id).style.display = 'none'; }
+function showBlock(id) { document.getElementById(id).style.display = 'block'; }
+
+function setLoading(msg) {
+  hide('authScreen');
+  show('loadingScreen');
+  document.getElementById('loadingText').textContent = msg;
+}
+function showApp() {
+  hide('loadingScreen');
+  showBlock('app');
+}
+
+// ══ AUTH ═════════════════════════════════════════════
+async function signIn() {
+  document.getElementById('authError').textContent = '';
+  try {
+    await msalInstance.loginRedirect({ scopes: CONFIG.scopes });
+  } catch(e) {
+    document.getElementById('authError').textContent = 'Sign-in failed: ' + e.message;
+  }
+}
+
+function signOut() {
+  msalInstance.logoutRedirect({ postLogoutRedirectUri: window.location.href });
+}
+
+async function getToken(account) {
+  try {
+    const result = await msalInstance.acquireTokenSilent({ scopes: CONFIG.scopes, account });
+    return result.accessToken;
+  } catch {
+    await msalInstance.acquireTokenRedirect({ scopes: CONFIG.scopes });
+  }
+}
+
+// ══ GRAPH API ════════════════════════════════════════
+async function fetchExcelRows(token) {
+  const siteRes = await fetch(
+    `https://graph.microsoft.com/v1.0/sites/${CONFIG.siteHost}:${CONFIG.sitePath}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  if (!siteRes.ok) throw new Error('Could not access SharePoint site. Check site permissions.');
+  const site = await siteRes.json();
+
+  // Search for the file
+  const driveRes = await fetch(
+    `https://graph.microsoft.com/v1.0/sites/${site.id}/drive/root/search(q=\'KMC_Slambook_Responses\')`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  const driveData = await driveRes.json();
+  let itemId = null;
+  if (driveData.value && driveData.value.length > 0) {
+    const match = driveData.value.find(f =>
+      f.name && f.name.toLowerCase().includes('slambook_responses')
+    );
+    if (match) itemId = match.id;
+  }
+
+  // Fallback: direct lookup by sourcedoc ID
+  if (!itemId) {
+    const directRes = await fetch(
+      `https://graph.microsoft.com/v1.0/sites/${site.id}/drive/items/${CONFIG.fileId}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+    if (directRes.ok) {
+      const item = await directRes.json();
+      itemId = item.id;
+    }
+  }
+
+  if (!itemId) throw new Error('Could not locate the Excel file in SharePoint.');
+
+  const rowsRes = await fetch(
+    `https://graph.microsoft.com/v1.0/sites/${site.id}/drive/items/${itemId}/workbook/worksheets/Responses/usedRange`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  if (!rowsRes.ok) throw new Error('Could not read Excel worksheet.');
+  const rowsData = await rowsRes.json();
+  return rowsData.values || [];
+}
+
+// ══ DATA PARSER ══════════════════════════════════════
+const COL = {
+  submittedAt:0, nameTitle:1, oneWord:3, coffee:4, casual:5, playful:6,
+  inspirational:7, storytelling:8, bigPicture:9, boldOpinions:10,
+  definingMoment:11, bestAdvice:12, biggestLesson:13, funFact:14,
+  hotTake:15, deepestBelief:16, pillar1:17, pillar2:18, pillar3:19,
+  pillar4:20, pillar5:21, targetAudience:22, emotionalGoal:23,
+  offLimits:24, commStyle:25, formats:26, legacyGoal:27,
+  quietPride:28, dailyMotivator:29
+};
+
+function parseRows(allRows) {
+  let headerIdx = -1;
+  for (let i = 0; i < allRows.length; i++) {
+    if (allRows[i][0] && String(allRows[i][0]).toLowerCase().includes('submitted')) {
+      headerIdx = i; break;
+    }
+  }
+  if (headerIdx === -1) return [];
+
+  const personas = [];
+  for (let i = headerIdx + 1; i < allRows.length; i++) {
+    const r = allRows[i];
+    if (!r[COL.nameTitle] || String(r[COL.nameTitle]).startsWith('←')) continue;
+    if (!r[COL.submittedAt]) continue;
+
+    const nameRaw = String(r[COL.nameTitle] || '').trim();
+    let name = nameRaw, jobTitle = '';
+    const sepMatch = nameRaw.match(/^(.+?)\s*[-|,]\s*(.+)$/);
+    if (sepMatch) { name = sepMatch[1].trim(); jobTitle = sepMatch[2].trim(); }
+
+    const matrix = {
+      coffee:        String(r[COL.coffee]       ||'').toLowerCase().includes('coffee'),
+      casual:        String(r[COL.casual]       ||'').toLowerCase().includes('casual'),
+      playful:       String(r[COL.playful]      ||'').toLowerCase().includes('playful'),
+      inspirational: String(r[COL.inspirational]||'').toLowerCase().includes('inspirational'),
+      storytelling:  String(r[COL.storytelling] ||'').toLowerCase().includes('storytelling'),
+      bigPicture:    String(r[COL.bigPicture]   ||'').toLowerCase().includes('big'),
+      bold:          String(r[COL.boldOpinions] ||'').toLowerCase().includes('bold'),
+    };
+
+    const pillars = [r[COL.pillar1],r[COL.pillar2],r[COL.pillar3],r[COL.pillar4],r[COL.pillar5]]
+      .map(p => String(p||'').trim()).filter(Boolean);
+
+    const formats = String(r[COL.formats]||'').split(',').map(f=>f.trim()).filter(Boolean);
+    const offLimits = String(r[COL.offLimits]||'').split(/[,;.]+/).map(s=>s.trim()).filter(s=>s.length>4).slice(0,4);
+
+    personas.push({
+      submittedAt:    String(r[COL.submittedAt]   ||''),
+      name, jobTitle,
+      oneWord:        String(r[COL.oneWord]        ||'').trim(),
+      matrix, pillars, formats, offLimits,
+      definingMoment: String(r[COL.definingMoment]||'').trim(),
+      bestAdvice:     String(r[COL.bestAdvice]    ||'').trim(),
+      biggestLesson:  String(r[COL.biggestLesson] ||'').trim(),
+      funFact:        String(r[COL.funFact]        ||'').trim(),
+      hotTake:        String(r[COL.hotTake]        ||'').trim(),
+      deepestBelief:  String(r[COL.deepestBelief] ||'').trim(),
+      targetAudience: String(r[COL.targetAudience]||'').trim(),
+      emotionalGoal:  String(r[COL.emotionalGoal] ||'').trim(),
+      commStyle:      String(r[COL.commStyle]     ||'').trim(),
+      legacyGoal:     String(r[COL.legacyGoal]    ||'').trim(),
+      quietPride:     String(r[COL.quietPride]    ||'').trim(),
+      dailyMotivator: String(r[COL.dailyMotivator]||'').trim(),
+    });
+  }
+  return personas;
+}
+
+// ══ RENDER ═══════════════════════════════════════════
+function slugify(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+}
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function renderPersonaSection(persona, accentVar) {
+  const slug   = slugify(persona.name);
+  const accent = `var(${accentVar})`;
+  const parts  = persona.name.split(' ');
+  const firstName = parts[0];
+  const lastName  = parts.slice(1).join(' ');
+
+  const taglineSrc = persona.legacyGoal || persona.definingMoment;
+  const tagline = taglineSrc.split(/[.!?]/).filter(Boolean)[0].trim() + '.';
+  const adviceSentence = persona.bestAdvice.split(/[.!?]/)[0].trim();
+  const voiceP1 = persona.commStyle;
+  const voiceP2 = persona.biggestLesson.length > 20 ? persona.biggestLesson : '';
+
+  const m = persona.matrix;
+  function mi(selected, label) {
+    return `<div class="tot-item ${selected?'selected':''}" ${selected?`style="color:${accent}"`:''}>` + escHtml(label) + `</div>`;
+  }
+  const matrixHTML = [
+    mi(m.coffee,'Coffee'), mi(!m.coffee,'Tea'),
+    mi(m.casual,'Casual'), mi(!m.casual,'Formal'),
+    mi(!m.playful,'Serious'), mi(m.playful,'Playful'),
+    mi(m.inspirational,'Inspirational'), mi(!m.inspirational,'Straight'),
+    mi(m.storytelling,'Storytelling'), mi(!m.storytelling,'Facts'),
+    mi(m.bigPicture,'Big picture'), mi(!m.bigPicture,'Detail-oriented'),
+    mi(m.bold,'Bold opinions'), mi(!m.bold,'Safe'),
+  ].join('');
+
+  const pillarsHTML = persona.pillars.map((p,i) =>
+    `<li><span class="pillar-num">0${i+1}</span><span>${escHtml(p)}</span></li>`).join('');
+
+  const formatsHTML  = persona.formats.map(f => `<span class="tag blue">${escHtml(f)}</span>`).join('');
+  const offLimitsHTML = (persona.offLimits.map(o => `<span class="tag red">${escHtml(o)}</span>`).join(''))
+    || `<span class="tag red">Inappropriate or divisive content</span>`;
+
+  return `
+<div class="section" id="${slug}">
+  <div class="persona-divider" style="background:${accent};"></div>
+  <div class="persona-hero">
+    <div class="persona-top">
+      <div>
+        <div class="persona-badge">
+          <div class="persona-badge-dot" style="background:${accent};"></div>
+          <span class="persona-badge-text">${escHtml(persona.jobTitle)} · KMC Solutions</span>
+        </div>
+        <h1 class="persona-name">${escHtml(firstName)}<br>${escHtml(lastName)}</h1>
+        <p class="persona-role">${escHtml(persona.jobTitle)}</p>
+        <blockquote class="persona-tagline" style="border-color:${accent};">"${escHtml(tagline)}"</blockquote>
+      </div>
+      <div class="persona-word-badge">
+        <div class="label">One Word</div>
+        <div class="word" style="color:${accent};">${escHtml(persona.oneWord)}</div>
+      </div>
+    </div>
+  </div>
+  <div class="persona-body">
+    <div class="main-col">
+      <div class="quote-block">
+        <blockquote>"${escHtml(adviceSentence)}."</blockquote>
+        <cite>${escHtml(persona.name)}'s Guiding Principle</cite>
+      </div>
+      <div class="card">
+        <div class="card-title">Voice &amp; Tone Profile</div>
+        <p>${escHtml(voiceP1)}</p>
+        ${voiceP2 ? `<p>${escHtml(voiceP2)}</p>` : ''}
+      </div>
+      ${persona.pillars.length > 0 ? `<div class="card"><div class="card-title">Content Pillars</div><ul class="pillar-list">${pillarsHTML}</ul></div>` : ''}
+      <div class="card"><div class="card-title">Defining Belief</div><p>${escHtml(persona.deepestBelief)}</p></div>
+      ${persona.hotTake ? `<div class="card"><div class="card-title">Hot Take</div><p>${escHtml(persona.hotTake)}</p></div>` : ''}
+      ${formatsHTML ? `<div class="card"><div class="card-title">LinkedIn Post Format Preferences</div><div class="tag-cloud">${formatsHTML}</div></div>` : ''}
+      ${persona.targetAudience ? `<div class="card"><div class="card-title">Who They're Writing For</div><p>${escHtml(persona.targetAudience)}</p></div>` : ''}
+    </div>
+    <div class="sidebar">
+      <div class="card"><div class="card-title">Personality Matrix</div><div class="tot-grid">${matrixHTML}</div></div>
+      <div class="card">
+        <div class="card-title">Quick Reference</div>
+        <ul class="kv-list">
+          ${persona.funFact        ? `<li><span class="k">Fun fact</span><span class="v">${escHtml(persona.funFact)}</span></li>` : ''}
+          ${persona.hotTake        ? `<li><span class="k">Hot take</span><span class="v">${escHtml(persona.hotTake)}</span></li>` : ''}
+          ${persona.legacyGoal     ? `<li><span class="k">Legacy goal</span><span class="v">${escHtml(persona.legacyGoal)}</span></li>` : ''}
+          ${persona.quietPride     ? `<li><span class="k">Quiet pride</span><span class="v">${escHtml(persona.quietPride)}</span></li>` : ''}
+          ${persona.dailyMotivator ? `<li><span class="k">Daily fuel</span><span class="v">${escHtml(persona.dailyMotivator)}</span></li>` : ''}
+        </ul>
+      </div>
+      <div class="card"><div class="card-title">Never Write This</div><div class="tag-cloud">${offLimitsHTML}</div></div>
+      ${persona.emotionalGoal ? `<div class="card"><div class="card-title">What They Want Readers to Feel</div><p style="font-family:'Cormorant Garamond',serif;font-size:18px;font-style:italic;color:var(--slate);">${escHtml(persona.emotionalGoal)}</p></div>` : ''}
+    </div>
+  </div>
+</div>`;
+}
+
+function renderAll(personas) {
+  document.getElementById('coverNames').innerHTML =
+    personas.map(p => `<div class="cover-name-chip">${escHtml(p.name)}</div>`).join('');
+
+  document.getElementById('navPersonaBtns').innerHTML =
+    personas.map(p => {
+      const slug = slugify(p.name);
+      const first = p.name.split(' ')[0];
+      return `<button class="nav-btn" onclick="showSection('${slug}',this)">${escHtml(first)}</button>`;
+    }).join('');
+
+  document.getElementById('personaSections').innerHTML =
+    personas.map((p,i) => renderPersonaSection(p, ACCENTS[i % ACCENTS.length])).join('');
+
+  document.getElementById('totalPersonas').textContent = personas.length;
+  document.getElementById('lastRefreshed').textContent = new Date().toLocaleString('en-PH',{
+    dateStyle:'medium', timeStyle:'short'
+  });
+}
+
+// ══ NAVIGATION ═══════════════════════════════════════
+function openBook() {
+  document.getElementById('cover').style.display = 'none';
+  const nav = document.getElementById('mainNav');
+  nav.style.display = 'flex';
+  showSection('intro', nav.querySelector('.nav-btn'));
+}
+
+function showSection(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  const target = document.getElementById(id);
+  if (target) target.classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ══ MAIN LOAD ════════════════════════════════════════
+async function loadAndRender(account) {
+  try {
+    document.getElementById('userDisplayName').textContent =
+      account.name || account.username || '';
+    setLoading('Fetching persona data from SharePoint…');
+    const token = await getToken(account);
+    setLoading('Reading slambook responses…');
+    const rows = await fetchExcelRows(token);
+    setLoading('Building persona cards…');
+    const personas = parseRows(rows);
+    if (personas.length === 0) {
+      document.getElementById('personaSections').innerHTML =
+        `<div class="empty-state"><h2>No responses yet</h2><p>Persona cards will appear here once slambook forms are submitted.</p></div>`;
+    } else {
+      renderAll(personas);
+    }
+    showApp();
+  } catch(err) {
+    hide('loadingScreen');
+    show('authScreen');
+    document.getElementById('authError').textContent = '⚠ ' + err.message;
+    console.error(err);
+  }
+}
+
+// ══ BOOT — load MSAL dynamically, then init ═══════════
+async function init() {
+  // Create MSAL instance now that the library is guaranteed loaded
+  msalInstance = new msal.PublicClientApplication({
+    auth: {
+      clientId:    CONFIG.clientId,
+      authority:   `https://login.microsoftonline.com/${CONFIG.tenantId}`,
+      redirectUri: window.location.origin + window.location.pathname
+    },
+    cache: { cacheLocation: 'sessionStorage', storeAuthStateInCookie: false }
+  });
+
+  await msalInstance.initialize();
+
+  // Handle redirect response (coming back from Microsoft login)
+  const response = await msalInstance.handleRedirectPromise();
+  if (response) {
+    setLoading('Fetching persona data…');
+    await loadAndRender(response.account);
+    return;
+  }
+
+  // Already signed in?
+  const accounts = msalInstance.getAllAccounts();
+  if (accounts.length > 0) {
+    setLoading('Loading persona data…');
+    await loadAndRender(accounts[0]);
+    return;
+  }
+
+  // Show auth screen (already visible by default)
+}
+
+// Load MSAL from CDN, then boot
+(function loadMSAL() {
+  const script = document.createElement('script');
+  script.src = 'https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js';
+  script.onload = () => init().catch(err => {
+    document.getElementById('authError').textContent = '⚠ ' + err.message;
+    console.error(err);
+  });
+  script.onerror = () => {
+    document.getElementById('authError').textContent = '⚠ Failed to load authentication library. Check your internet connection.';
+  };
+  document.head.appendChild(script);
+})();
+</script>
+</body>
+</html>
